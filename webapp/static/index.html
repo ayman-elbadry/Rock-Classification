@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoRock AI — Classification Intelligente des Roches</title>
+    <meta name="description" content="GeoRock AI utilise l'intelligence artificielle (ResNet50 + Grad-CAM) pour classifier les roches en Ignée, Métamorphique ou Sédimentaire.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- ─── Animated Background ─── -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- ─── Navigation ─── -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-icon">🪨</span>
+                <span class="logo-text">GeoRock<span class="logo-accent">AI</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="#hero" class="nav-link active" data-section="hero">Accueil</a>
+                <a href="#classify" class="nav-link" data-section="classify">Classifier</a>
+                <a href="#results-section" class="nav-link" data-section="results-section">Résultats</a>
+                <a href="#gallery" class="nav-link" data-section="gallery">Galerie</a>
+                <a href="#about" class="nav-link" data-section="about">À propos</a>
+            </div>
+            <button class="nav-burger" id="navBurger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ─── Hero Section ─── -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Deep Learning · ResNet50 · Grad-CAM
+            </div>
+            <h1 class="hero-title">
+                Classification<br>
+                <span class="gradient-text">Intelligente</span> des Roches
+            </h1>
+            <p class="hero-subtitle">
+                Identifiez instantanément le type de roche — <strong>Ignée</strong>, <strong>Métamorphique</strong> ou <strong>Sédimentaire</strong> — grâce à notre modèle de deep learning avec explicabilité visuelle Grad-CAM.
+            </p>
+            <div class="hero-actions">
+                <a href="#classify" class="btn btn-primary btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Classifier une roche
+                </a>
+                <a href="#results-section" class="btn btn-ghost btn-lg">
+                    Voir les résultats
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value">3</span>
+                    <span class="stat-label">Classes</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value">7</span>
+                    <span class="stat-label">Sous-types</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value" id="accuracyStat">—</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="rock-orbit">
+                <div class="orbit-ring orbit-ring-1"></div>
+                <div class="orbit-ring orbit-ring-2"></div>
+                <div class="orbit-ring orbit-ring-3"></div>
+                <div class="orbit-center">
+                    <span class="orbit-emoji">🔬</span>
+                </div>
+                <div class="orbit-item orbit-item-1">🪨</div>
+                <div class="orbit-item orbit-item-2">💎</div>
+                <div class="orbit-item orbit-item-3">⛰️</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Classify Section ─── -->
+    <section class="section" id="classify">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Classifier</span>
+                <h2 class="section-title">Analysez votre <span class="gradient-text">Roche</span></h2>
+                <p class="section-desc">Téléchargez une image de roche et notre IA vous fournira une classification précise avec une carte de chaleur explicative.</p>
+            </div>
+
+            <div class="classify-grid">
+                <!-- Upload Area -->
+                <div class="upload-card glass-card">
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                        <div class="upload-content" id="uploadContent">
+                            <div class="upload-icon-wrap">
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                            </div>
+                            <p class="upload-text">Glissez-déposez votre image ici</p>
+                            <p class="upload-hint">ou cliquez pour parcourir · JPG, PNG</p>
+                        </div>
+                        <div class="upload-preview" id="uploadPreview" style="display:none;">
+                            <img id="previewImg" alt="Preview">
+                            <button class="preview-clear" id="clearBtn" title="Supprimer">&times;</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" id="classifyBtn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        Analyser la roche
+                    </button>
+                </div>
+
+                <!-- Results Area -->
+                <div class="results-card glass-card" id="resultsCard">
+                    <div class="results-placeholder" id="resultsPlaceholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        <p>Les résultats de l'analyse apparaîtront ici</p>
+                    </div>
+
+                    <div class="results-content" id="resultsContent" style="display:none;">
+                        <!-- Prediction Header -->
+                        <div class="pred-header">
+                            <div class="pred-class-wrap">
+                                <span class="pred-label">Classification</span>
+                                <h3 class="pred-class" id="predClass">—</h3>
+                                <div class="pred-subtypes" id="predSubtypes"></div>
+                            </div>
+                            <div class="pred-conf-ring" id="confRing">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="ring-bg" cx="50" cy="50" r="42"/>
+                                    <circle class="ring-fill" cx="50" cy="50" r="42" id="ringFill"/>
+                                </svg>
+                                <span class="ring-value" id="confValue">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Probability Bars -->
+                        <div class="prob-bars" id="probBars"></div>
+
+                        <!-- Grad-CAM -->
+                        <div class="gradcam-section">
+                            <div class="gradcam-header">
+                                <h4>Grad-CAM — Explicabilité</h4>
+                                <span class="gradcam-badge">Zones d'attention du modèle</span>
+                            </div>
+                            <div class="gradcam-img-wrap">
+                                <img id="gradcamImg" alt="Grad-CAM heatmap">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="results-loading" id="resultsLoading" style="display:none;">
+                        <div class="spinner"></div>
+                        <p>Analyse en cours...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Training Results Section ─── -->
+    <section class="section section-dark" id="results-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Métriques</span>
+                <h2 class="section-title">Résultats d'<span class="gradient-text">Entraînement</span></h2>
+                <p class="section-desc">Visualisez les performances du modèle : courbes d'apprentissage, matrice de confusion, et rapport de classification détaillé.</p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="tabs" id="resultsTabs">
+                <button class="tab active" data-tab="training">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Courbes d'entraînement
+                </button>
+                <button class="tab" data-tab="confusion">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                    Matrice de Confusion
+                </button>
+                <button class="tab" data-tab="report">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Rapport de Classification
+                </button>
+                <button class="tab" data-tab="accuracy">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    Accuracy par Classe
+                </button>
+                <button class="tab" data-tab="eda">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    EDA
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-panels">
+                <div class="tab-panel active" id="panel-training">
+                    <div class="result-image-wrap">
+                        <img id="img-training" alt="Courbes d'entraînement" class="result-img">
+                        <div class="no-data-msg" id="nodata-training" style="display:none;">
+                            <p>Aucune donnée d'entraînement disponible. Lancez <code>python train.py</code> d'abord.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="panel-confusion">
+                    <div class="result-image-wrap">
+                        <img id="img-confusion" alt="Matrice de confusion" class="result-img">
+                        <div class="no-data-msg" id="nodata-confusion" style="display:none;">
+                            <p>Matrice de confusion non disponible.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="panel-report">
+                    <div class="report-grid">
+                        <div class="result-image-wrap">
+                            <img id="img-report" alt="Rapport de classification" class="result-img">
+                            <div class="no-data-msg" id="nodata-report" style="display:none;">
+                                <p>Rapport non disponible.</p>
+                            </div>
+                        </div>
+                        <div class="report-text-wrap glass-card" id="reportTextWrap" style="display:none;">
+                            <h4>Rapport détaillé</h4>
+                            <pre id="reportText"></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="panel-accuracy">
+                    <div class="result-image-wrap">
+                        <img id="img-accuracy" alt="Accuracy par classe" class="result-img">
+                        <div class="no-data-msg" id="nodata-accuracy" style="display:none;">
+                            <p>Données d'accuracy non disponibles.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="panel-eda">
+                    <div class="eda-gallery" id="edaGallery"></div>
+                    <div class="no-data-msg" id="nodata-eda" style="display:none;">
+                        <p>Aucun résultat EDA disponible. Lancez <code>python eda.py</code> d'abord.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Gallery Section ─── -->
+    <section class="section" id="gallery">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Dataset</span>
+                <h2 class="section-title">Galerie de <span class="gradient-text">Roches</span></h2>
+                <p class="section-desc">Explorez des exemples de notre dataset contenant 7 sous-types de roches.</p>
+            </div>
+
+            <!-- Class Filter -->
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">Toutes</button>
+                <button class="filter-btn" data-filter="Igneous">🔥 Ignée</button>
+                <button class="filter-btn" data-filter="Metamorphic">💎 Métamorphique</button>
+                <button class="filter-btn" data-filter="Sedimentary">🏖️ Sédimentaire</button>
+            </div>
+
+            <div class="gallery-grid" id="galleryGrid">
+                <div class="gallery-loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des images...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── About Section ─── -->
+    <section class="section section-dark" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Architecture</span>
+                <h2 class="section-title">À propos du <span class="gradient-text">Modèle</span></h2>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card glass-card">
+                    <div class="about-icon">🧠</div>
+                    <h3>ResNet50</h3>
+                    <p>Architecture de deep learning pré-entraînée sur ImageNet, fine-tunée sur notre dataset de roches géologiques pour une classification précise.</p>
+                </div>
+                <div class="about-card glass-card">
+                    <div class="about-icon">🔬</div>
+                    <h3>Grad-CAM</h3>
+                    <p>Gradient-weighted Class Activation Mapping permet de visualiser les zones de l'image qui influencent le plus la décision du modèle.</p>
+                </div>
+                <div class="about-card glass-card">
+                    <div class="about-icon">⚖️</div>
+                    <h3>WeightedRandomSampler</h3>
+                    <p>Gestion du déséquilibre des classes par échantillonnage pondéré, assurant un entraînement équitable sur toutes les catégories.</p>
+                </div>
+                <div class="about-card glass-card">
+                    <div class="about-icon">🎯</div>
+                    <h3>Transfer Learning</h3>
+                    <p>Entraînement en deux phases : d'abord le classificateur seul, puis fine-tuning de toutes les couches avec early stopping.</p>
+                </div>
+                <div class="about-card glass-card">
+                    <div class="about-icon">📊</div>
+                    <h3>Data Augmentation</h3>
+                    <p>Rotations, flips, crops aléatoires et jitter de couleur pour augmenter la robustesse et la généralisation du modèle.</p>
+                </div>
+                <div class="about-card glass-card">
+                    <div class="about-icon">🪨</div>
+                    <h3>3 Classes · 7 Sous-types</h3>
+                    <p>Ignée (Basalte, Granite) · Métamorphique (Marbre, Quartzite) · Sédimentaire (Charbon, Calcaire, Grès)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Footer ─── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <span class="logo-icon">🪨</span>
+                    <span class="logo-text">GeoRock<span class="logo-accent">AI</span></span>
+                </div>
+                <p class="footer-copy">Projet de classification de roches par Deep Learning</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
