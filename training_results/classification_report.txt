@@ -1,0 +1,9 @@
+              precision    recall  f1-score   support
+
+     Igneous       0.72      0.78      0.75        37
+ Metamorphic       0.97      0.87      0.91       172
+ Sedimentary       0.88      0.95      0.91       205
+
+    accuracy                           0.90       414
+   macro avg       0.86      0.87      0.86       414
+weighted avg       0.90      0.90      0.90       414
